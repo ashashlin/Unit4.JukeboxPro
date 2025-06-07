@@ -46,6 +46,7 @@ export async function getPlaylistById(playlistId, id) {
 export async function getPlaylistsWithTrack(trackId, id) {
   const sql = `
     SELECT
+      playlists.id,
       playlists.name,
       playlists.description
     FROM

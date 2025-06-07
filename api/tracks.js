@@ -17,6 +17,7 @@ router.route("/:id").get(async (req, res) => {
   res.send(track);
 });
 
+// GET /tracks/:id/playlists
 router.get(
   "/:id/playlists",
   getUserFromToken,
@@ -25,7 +26,13 @@ router.get(
     const trackId = req.params.id;
     const { id } = req.user;
 
+    const track = await getTrackById(trackId);
+    if (!track) return res.status(404).send("Track not found.");
+
     const playlists = await getPlaylistsWithTrack(trackId, id);
+    if (playlists.length === 0)
+      return res.status(404).send("Playlist containing this track not found.");
+
     res.send(playlists);
   }
 );
