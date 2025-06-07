@@ -4,6 +4,7 @@ import { createPlaylistTrack } from "#db/queries/playlists_tracks";
 import { getTracksByPlaylistId } from "#db/queries/tracks";
 import getUserFromToken from "#middleware/getUserFromToken";
 import requireUser from "#middleware/requireUser";
+import requireBody from "#middleware/requireBody";
 
 const router = express.Router();
 
@@ -18,14 +19,11 @@ router
     const playlists = await getPlaylistsByUserId(id);
     res.send(playlists);
   })
-  .post(async (req, res) => {
-    if (!req.body) return res.status(400).send("Request body is required.");
-
+  .post(requireBody(["name", "description"]), async (req, res) => {
+    const { id } = req.user;
     const { name, description } = req.body;
-    if (!name || !description)
-      return res.status(400).send("Request body requires: name, description");
 
-    const playlist = await createPlaylist(name, description);
+    const playlist = await createPlaylist(name, description, id);
     res.status(201).send(playlist);
   });
 
