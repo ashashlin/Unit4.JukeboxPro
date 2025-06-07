@@ -1,5 +1,9 @@
 import express from "express";
-import { createPlaylist, getPlaylistsByUserId } from "#db/queries/playlists";
+import {
+  createPlaylist,
+  getPlaylistById,
+  getPlaylistsByUserId,
+} from "#db/queries/playlists";
 import { createPlaylistTrack } from "#db/queries/playlists_tracks";
 import { getTracksByPlaylistId } from "#db/queries/tracks";
 import getUserFromToken from "#middleware/getUserFromToken";
@@ -27,15 +31,18 @@ router
     res.status(201).send(playlist);
   });
 
+// id here (the 4th param) is the id value in req.params, which is the playlist id
 router.param("id", async (req, res, next, id) => {
-  const playlist = await getPlaylistById(id);
+  const userId = req.user.id;
+  const playlist = await getPlaylistById(id, userId);
+
   if (!playlist) return res.status(404).send("Playlist not found.");
 
   req.playlist = playlist;
   next();
 });
 
-router.route("/:id").get((req, res) => {
+router.route("/:id").get(async (req, res) => {
   res.send(req.playlist);
 });
 

@@ -30,14 +30,15 @@ export async function getPlaylistsByUserId(id) {
   return playlists;
 }
 
-export async function getPlaylistById(id) {
+export async function getPlaylistById(playlistId, id) {
   const sql = `
-  SELECT *
-  FROM playlists
-  WHERE id = $1
+    SELECT *
+    FROM playlists
+    WHERE id = $1
+      AND owner_id = $2;
   `;
   const {
     rows: [playlist],
-  } = await db.query(sql, [id]);
+  } = await db.query(sql, [playlistId, id]);
   return playlist;
 }
