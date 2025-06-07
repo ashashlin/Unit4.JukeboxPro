@@ -1,23 +1,17 @@
+import express from "express";
+import requireBody from "#middleware/requireBody";
 import { createUser, getUserByUsername } from "#db/queries/users";
 import { createToken } from "#utils/jwt";
-import express from "express";
 
 const usersRouter = express.Router();
+
+// apply this middleware to all routes below
+usersRouter.use(requireBody(["username", "password"]));
 
 // POST /users/register
 usersRouter.post("/register", async (req, res, next) => {
   try {
-    // assuming req.body always exists
     const { username, password } = req.body;
-
-    if (!username || !password) {
-      return res
-        .status(400)
-        .send(
-          "Error: please include both username and password in the request body."
-        );
-    }
-
     const user = await createUser(username, password);
     const payload = { id: user.id };
     const accessToken = createToken(payload);
@@ -31,17 +25,7 @@ usersRouter.post("/register", async (req, res, next) => {
 // POST /users/login
 usersRouter.post("/login", async (req, res, next) => {
   try {
-    // assuming req.body always exists
     const { username, password } = req.body;
-
-    if (!username || !password) {
-      return res
-        .status(400)
-        .send(
-          "Error: please include both username and password in the request body."
-        );
-    }
-
     const user = await getUserByUsername(username, password);
 
     if (!user)
