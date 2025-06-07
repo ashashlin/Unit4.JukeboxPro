@@ -1,16 +1,22 @@
 import db from "#db/client";
 
-export async function createPlaylist(name, description) {
+export async function createPlaylist(name, description, ownerId) {
   const sql = `
-  INSERT INTO playlists
-    (name, description)
-  VALUES
-    ($1, $2)
-  RETURNING *
+    INSERT INTO playlists(
+      name,
+      description,
+      owner_id
+    )
+    VALUES(
+      $1,
+      $2,
+      $3
+    )
+    RETURNING *;
   `;
   const {
     rows: [playlist],
-  } = await db.query(sql, [name, description]);
+  } = await db.query(sql, [name, description, ownerId]);
   return playlist;
 }
 
