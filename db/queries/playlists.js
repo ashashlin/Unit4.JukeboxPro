@@ -20,12 +20,13 @@ export async function createPlaylist(name, description, ownerId) {
   return playlist;
 }
 
-export async function getPlaylists() {
+export async function getPlaylistsByUserId(id) {
   const sql = `
   SELECT *
   FROM playlists
+  WHERE owner_id = $1;
   `;
-  const { rows: playlists } = await db.query(sql);
+  const { rows: playlists } = await db.query(sql, [id]);
   return playlists;
 }
 

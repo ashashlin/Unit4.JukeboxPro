@@ -16,6 +16,8 @@ async function seed() {
     const username = faker.internet.username();
     const password = faker.internet.password();
 
+    console.log(username, password);
+
     await createUser(username, password);
   }
 

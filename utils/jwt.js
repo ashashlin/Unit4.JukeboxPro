@@ -8,6 +8,7 @@ export function createToken(payload) {
 }
 
 /** Extracts the payload from a token */
+// returns the payload object if valid, throws an error if invalid
 export function verifyToken(token) {
   return jwt.verify(token, SECRET);
 }

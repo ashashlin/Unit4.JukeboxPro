@@ -1,19 +1,21 @@
 import express from "express";
-const router = express.Router();
-export default router;
-
-import {
-  createPlaylist,
-  getPlaylistById,
-  getPlaylists,
-} from "#db/queries/playlists";
+import { createPlaylist, getPlaylistsByUserId } from "#db/queries/playlists";
 import { createPlaylistTrack } from "#db/queries/playlists_tracks";
 import { getTracksByPlaylistId } from "#db/queries/tracks";
+import getUserFromToken from "#middleware/getUserFromToken";
+import requireUser from "#middleware/requireUser";
+
+const router = express.Router();
+
+// rough flow - check if user has an access token, if not, send 401 unauthorized. if they do, verify the token. if invalid, throws an error and send 401. if valid, get the user from db, set req.user = user, and then go to requireUser
+router.use(getUserFromToken);
+router.use(requireUser);
 
 router
   .route("/")
   .get(async (req, res) => {
-    const playlists = await getPlaylists();
+    const { id } = req.user;
+    const playlists = await getPlaylistsByUserId(id);
     res.send(playlists);
   })
   .post(async (req, res) => {
@@ -54,3 +56,5 @@ router
     const playlistTrack = await createPlaylistTrack(req.playlist.id, trackId);
     res.status(201).send(playlistTrack);
   });
+
+export default router;
