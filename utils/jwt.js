@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-const SECRET = process.env.JWT_SECRET;
+const SECRET = process.env.ACCESS_TOKEN_SECRET;
 
 /** Creates a token with the given payload */
 export function createToken(payload) {
