@@ -16,6 +16,8 @@ const router = express.Router();
 router.use(getUserFromToken);
 router.use(requireUser);
 
+// GET /playlists
+// POST /playlists
 router
   .route("/")
   .get(async (req, res) => {
@@ -36,27 +38,27 @@ router.param("id", async (req, res, next, id) => {
   const userId = req.user.id;
   const playlist = await getPlaylistById(id, userId);
 
-  if (!playlist) return res.status(404).send("Playlist not found.");
+  if (!playlist) return res.status(403).send("Playlist not found.");
 
   req.playlist = playlist;
   next();
 });
 
+// GET /playlists/:id
 router.route("/:id").get(async (req, res) => {
   res.send(req.playlist);
 });
 
+// GET /playlists/:id/tracks
+// POST /playlists/:id/tracks
 router
   .route("/:id/tracks")
   .get(async (req, res) => {
     const tracks = await getTracksByPlaylistId(req.playlist.id);
     res.send(tracks);
   })
-  .post(async (req, res) => {
-    if (!req.body) return res.status(400).send("Request body is required.");
-
+  .post(requireBody(["trackId"]), async (req, res) => {
     const { trackId } = req.body;
-    if (!trackId) return res.status(400).send("Request body requires: trackId");
 
     const playlistTrack = await createPlaylistTrack(req.playlist.id, trackId);
     res.status(201).send(playlistTrack);
